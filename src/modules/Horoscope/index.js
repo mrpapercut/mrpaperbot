@@ -6,6 +6,7 @@ import MainModule from '~/modules/MainModule';
 import DB from '~/util/DB';
 
 import dbSchema from './dbSchema';
+import showHelp from './showHelp';
 import getHoroscope from './getHoroscope';
 import getCanvasChart from './getCanvasChart';
 
@@ -19,13 +20,13 @@ class Horoscope extends MainModule {
     async handleMessage(message, args) {
         /**
          * Commands:
-         * .horoscope <zodiac> <date?>          Returns horoscope
-         * .horoscope <date?>                   Returns horoscope, gets zodiac from db
+         * .horoscope                           Returns horoscope, gets zodiac from db
+         * .horoscope <zodiac>                  Returns horoscope
          * .horoscope register <date|zodiac>    Store this user's date or zodiac
          * .horoscope help                      Show this information
          */
         if (args.length > 0) {
-            // .horoscope <zodiac> <date?>
+            // .horoscope <zodiac>
             const zodiacName = this.findZodiacByName(args[0].toLowerCase());
 
             if (zodiacName) {
@@ -36,7 +37,7 @@ class Horoscope extends MainModule {
                         this.registerUser(message, args);
                         break;
                     case 'help':
-                        this.showHelp(message, args);
+                        showHelp(message, args);
                         break;
                     case 'chart':
                         this.getChart(message);
@@ -47,7 +48,7 @@ class Horoscope extends MainModule {
             const zodiacName = await this.getZodiacFromDatabase(message);
 
             if (zodiacName === null) {
-                this.showHelp(message, 'user_no_zodiac_known');
+                showHelp(message, 'user_no_zodiac_known');
             } else {
                 getHoroscope(message, zodiacName);
             }
@@ -79,6 +80,7 @@ class Horoscope extends MainModule {
             longitude: 4.74,
         };
 
+        /*
         const originTestChar = {
             year: 1996,
             month: 0,
@@ -88,7 +90,9 @@ class Horoscope extends MainModule {
             latitude: 51.92,
             longitude: 4.25
         }
-        const originAtBirth = new Origin(originTestChar);
+        */
+
+        const originAtBirth = new Origin(originTestMischa);
 
         const horoscopeAtBirth = new CNHoroscope({
             origin: originAtBirth,
@@ -108,9 +112,10 @@ class Horoscope extends MainModule {
 
         // args[0] = 'register'
         switch (args[1]) {
-            case 'zodiac':
+            case 'sign':
                 // register userid + zodiac
                 break;
+
             case 'date':
                 // calculate zodiac, register user_id + zodiac + dob
                 break;
@@ -124,7 +129,7 @@ class Horoscope extends MainModule {
                 break;
 
             default:
-                return this.showHelp(message, 'unknown_option_register');
+                return showHelp(message, 'unknown_option_register');
         }
 
         /*
@@ -145,28 +150,6 @@ class Horoscope extends MainModule {
 
         message.channel.send('ok');
         */
-    }
-
-    showHelp(message, args) {
-        let response = '';
-
-        if (args[1]) {
-            switch (args[1]) {
-                case 'user_no_zodiac_known':
-                    response = 'I don\'t know who you are. Please register using `.horoscope register` or provide a zodiac-sign like `.horoscope pisces`';
-                    break;
-
-                case 'unknown_option_register':
-                    response = 'Unknown option';
-                    break;
-
-                default:
-                    response = 'Global help';
-                    break;
-            }
-        }
-
-        message.channel.send(response);
     }
 
     async getZodiacFromDatabase(message) {

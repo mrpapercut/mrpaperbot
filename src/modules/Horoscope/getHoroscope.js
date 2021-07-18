@@ -3,6 +3,14 @@ import axios from 'axios';
 import {ucfirst} from '~/util/format';
 import appConfig from '~/config.json';
 
+const parseLuckyTime = lt => {
+    if (/am$/.test(lt)) {
+        return `${parseInt(lt)}:00`.padStart(5, '0');
+    } else {
+        return `${parseInt(lt) + 12}:00`;
+    }
+}
+
 const getHoroscope = (message, zodiacsign) => {
     axios({
         method: 'post',
@@ -18,24 +26,24 @@ const getHoroscope = (message, zodiacsign) => {
                 title: `Daily horoscope for ${ucfirst(zodiacsign)}`,
                 description: `*"${data.description}"*`,
                 fields: [{
-                    name: 'Compatible with:',
+                    name: 'Compatible with',
                     value: data.compatibility,
                     inline: true
                 }, {
-                    name: 'Mood:',
+                    name: 'Mood',
                     value: data.mood,
                     inline: true
                 }, {
-                    name: 'Color:',
+                    name: 'Color',
                     value: data.color,
                     inline: true
                 }, {
-                    name: 'Lucky number:',
+                    name: 'Lucky number',
                     value: data.lucky_number,
                     inline: true
                 }, {
-                    name: 'Lucky time:',
-                    value: data.lucky_time,
+                    name: 'Lucky time',
+                    value: parseLuckyTime(data.lucky_time),
                     inline: true
                 }, {
                     name: 'Date',
