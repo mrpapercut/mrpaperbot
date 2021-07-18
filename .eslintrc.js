@@ -15,6 +15,6 @@ module.exports = {
     },
     parser: '@babel/eslint-parser',
     rules: {
-
+        "no-prototype-builtins": "off"
     }
 };
