@@ -20,7 +20,7 @@ const commandFolders = fs.readdirSync(pathResolve());
 
 for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(pathResolve(folder)).filter(file => file.endsWith('.js'));
-    
+
     for (const file of commandFiles) {
         const command = require(pathResolve(`${folder}/${file}`));
         client.commands.set(command.name, command);
@@ -33,7 +33,7 @@ client.once('ready', () => {
 
 client.on('message', message => {
     if (!message.content.startsWith(appConfig.prefix) || message.author.bot) return;
-    
+
     const args = message.content.slice(appConfig.prefix.length).trim().split(/\s+/);
     const commandName = args.shift().toLowerCase();
 
@@ -47,6 +47,10 @@ client.on('message', message => {
 
     if (command.guildOnly && message.channel.type === 'dm') {
         return message.reply('This command is unavailable in DMs');
+    }
+
+    if (command.dmOnly && message.channel.type !== 'dm') {
+        return message.reply('This command is only available in DMs');
     }
 
     try {

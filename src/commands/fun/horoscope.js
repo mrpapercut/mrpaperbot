@@ -5,7 +5,8 @@ module.exports = {
     aliases: ['horo', 'horoscoop'],
     description: 'Shows today\'s horoscope',
     guildOnly: false,
-    ownerOnly: true,
+    ownerOnly: false,
+    dmOnly: false,
     execute(message, args) {
         const horoscope = new Horoscope();
 
