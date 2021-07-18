@@ -66,7 +66,7 @@ module.exports = {
         }
     },
     chiron: {
-        unicode: 0x2191,
+        unicode: 0x26B7,
         i18n: {
             nl: 'chiron'
         }

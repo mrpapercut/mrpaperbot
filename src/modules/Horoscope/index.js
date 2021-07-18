@@ -1,12 +1,12 @@
-import axios from 'axios';
 import { Origin, Horoscope as CNHoroscope } from 'circular-natal-horoscope-js';
 import Discord from 'discord.js';
 
 import MainModule from '~/modules/MainModule';
 
-import appConfig from '~/config.json';
-import {ucfirst} from '~/util/format';
+import DB from '~/util/DB';
 
+import dbSchema from './dbSchema';
+import getHoroscope from './getHoroscope';
 import getCanvasChart from './getCanvasChart';
 
 import zodiacs from './util/zodiacs';
@@ -15,8 +15,8 @@ class Horoscope extends MainModule {
     constructor(props) {
         super(props);
     }
-    
-    handleMessage(message, args) {
+
+    async handleMessage(message, args) {
         /**
          * Commands:
          * .horoscope <zodiac> <date?>          Returns horoscope
@@ -29,25 +29,28 @@ class Horoscope extends MainModule {
             const zodiacName = this.findZodiacByName(args[0].toLowerCase());
 
             if (zodiacName) {
-                let horoscopeDate = 'today';
-
-                if (args[1] && ['yesterday', 'tomorrow'].includes(args[1])) {
-                    horoscopeDate = args[1];
+                getHoroscope(message, zodiacName);
+            } else {
+                switch (args[0]) {
+                    case 'register':
+                        this.registerUser(message, args);
+                        break;
+                    case 'help':
+                        this.showHelp(message, args);
+                        break;
+                    case 'chart':
+                        this.getChart(message);
+                        break;
                 }
-
-                this.getHoroscope(message, zodiacName, horoscopeDate);
-            } else if (args[0] === 'register') {
-                // TODO: Check if args[1] exists and is <date?|zodiac>
-                this.registerUser(message, args[1])
-            } else if (args[0] === 'help') {
-                this.showHelp(message);
-            } else if (args[0] === 'chart') {
-                this.getChart(message);
             }
         } else {
-            const zodiacName = this.getZodiacFromDatabase(message);
+            const zodiacName = await this.getZodiacFromDatabase(message);
 
-            // Nothing here yet
+            if (zodiacName === null) {
+                this.showHelp(message, 'user_no_zodiac_known');
+            } else {
+                getHoroscope(message, zodiacName);
+            }
         }
     }
 
@@ -60,78 +63,33 @@ class Horoscope extends MainModule {
                     return i;
                 }
             }
-          
+
             return false;
         }
-    };
-    
-    getHoroscope(message, zodiacsign = 'sagittarius', date = 'today') {
-        axios({
-            method: 'post',
-            url: `https://aztro.sameerkumar.website/?sign=${zodiacsign}&day=${date}`,
-            responseType: 'json'
-        })
-        .then(({data}) => {
-            const response = {
-                embed: {
-                    type: 'rich',
-                    color: appConfig.colors.embed,
-                    timestamp: new Date,
-                    title: `${ucfirst(zodiacsign)} horoscope for ${data.current_date}`,
-                    description: `*"${data.description}"*`,
-                    fields: [{
-                        name: 'Compatible with:',
-                        value: data.compatibility,
-                        inline: true
-                    }, {
-                        name: 'Mood:',
-                        value: data.mood,
-                        inline: true
-                    }, {
-                        name: 'Color:',
-                        value: data.color,
-                        inline: true
-                    }, {
-                        name: 'Lucky number:',
-                        value: data.lucky_number,
-                        inline: true
-                    }, {
-                        name: 'Lucky time:',
-                        value: data.lucky_time,
-                        inline: true
-                    }, {
-                        name: '\u0000',
-                        value: '\u0000',
-                        inline: true
-                    }]
-                }
-            };
-
-            axios(`https://ohmanda.com/api/horoscope/${zodiacsign}`).then(({data}) => {
-                response.embed.description += `\n\n*"${data.horoscope}"*`;
-            }).catch(err => {
-                console.error(err);
-            }).then(() => {
-                message.channel.send(response);
-            });
-        })
-        .catch(err => {
-            console.error(err);
-            message.channel.send('Error fetching horoscope');
-        });
     }
 
     async getChart(message) {
-        const originAtBirth = new Origin({
-            year: 1984,
+        const originTestMischa = {
+            year: 1985,
             month: 11, // 0 = January, 11 = December!
             date: 17,
             hour: 15,
             minute: 40,
             latitude: 52.62,
             longitude: 4.74,
-        });
-        
+        };
+
+        const originTestChar = {
+            year: 1996,
+            month: 0,
+            date: 17,
+            hour: 18,
+            minute: 25,
+            latitude: 51.92,
+            longitude: 4.25
+        }
+        const originAtBirth = new Origin(originTestChar);
+
         const horoscopeAtBirth = new CNHoroscope({
             origin: originAtBirth,
             houseSystem: 'placidus',
@@ -145,16 +103,83 @@ class Horoscope extends MainModule {
         message.channel.send(attachment);
     }
 
-    registerUser(message, zodiacOrDOB) {
-        message.channel.send('Registration coming soon!');
+    registerUser(message, args) {
+        message.channel.send('registration coming soon');
+
+        // args[0] = 'register'
+        switch (args[1]) {
+            case 'zodiac':
+                // register userid + zodiac
+                break;
+            case 'date':
+                // calculate zodiac, register user_id + zodiac + dob
+                break;
+
+            case 'time':
+                // calculate zodiac, register user_id + zodiac + dob_*
+                break;
+
+            case 'location':
+                // calculate zodiac, register pob_lat + pob_long
+                break;
+
+            default:
+                return this.showHelp(message, 'unknown_option_register');
+        }
+
+        /*
+        const db = new DB(dbSchema);
+        db.init();
+
+        const res = db.registerUser({
+            userid: message.author.id,
+            zodiac: 'sagittarius',
+            dob_year: 1985,
+            dob_month: 11,
+            dob_day: 17,
+            dob_hour: 15,
+            dob_minute: 40,
+            pob_lat: 52.62,
+            pob_long: 4.74
+        })
+
+        message.channel.send('ok');
+        */
     }
 
-    showHelp(message) {
-        message.channel.send('Help!');
+    showHelp(message, args) {
+        let response = '';
+
+        if (args[1]) {
+            switch (args[1]) {
+                case 'user_no_zodiac_known':
+                    response = 'I don\'t know who you are. Please register using `.horoscope register` or provide a zodiac-sign like `.horoscope pisces`';
+                    break;
+
+                case 'unknown_option_register':
+                    response = 'Unknown option';
+                    break;
+
+                default:
+                    response = 'Global help';
+                    break;
+            }
+        }
+
+        message.channel.send(response);
     }
 
-    getZodiacFromDatabase(message) {
+    async getZodiacFromDatabase(message) {
+        const db = new DB(dbSchema);
+        db.init();
 
+        const res = await db.getByIndex(message.author.id);
+
+        if (res) {
+            return res.zodiac;
+        } else {
+            return null;
+        }
     }
 }
 

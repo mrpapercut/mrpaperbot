@@ -1,5 +1,5 @@
 import path from 'path';
-import { 
+import {
     createCanvas,
     loadImage
 } from 'canvas';
@@ -19,13 +19,10 @@ const getCanvasChart = async horoscope => {
             house: body.House.id
         }));
 
-    // console.log(`Ascendant: ${horoscope._ascendant.Sign.label}`);
-    // console.log(`Sun sign: ${horoscope._celestialBodies.sun.Sign.label}`);
-    // console.log(`Moon sign: ${horoscope._celestialBodies.moon.Sign.label}`);
-
     const plutoIcon = await loadImage(path.resolve(__dirname, './assets/pluto.svg'));
+    const chironIcon = await loadImage(path.resolve(__dirname, './assets/chiron.svg'));
 
-    const canvas = createCanvas(480, 640);
+    const canvas = createCanvas(520, 720);
     const ctx = canvas.getContext('2d');
 
     // Background
@@ -34,19 +31,27 @@ const getCanvasChart = async horoscope => {
 
     // Table
     ctx.strokeStyle = '#fff';
-    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+    ctx.strokeRect(10, 80, canvas.width - 20, canvas.height - 90);
+
     // Vertical line 1
     ctx.beginPath();
-    ctx.moveTo(200, 10);
+    ctx.moveTo(200, 80);
     ctx.lineTo(200, canvas.height - 10);
     ctx.stroke();
+
     // Vertical line 2
     ctx.beginPath();
-    ctx.moveTo(380, 10);
+    ctx.moveTo(380, 80);
     ctx.lineTo(380, canvas.height - 10);
     ctx.stroke();
 
-    const offsetTop = 50;
+    // Ascendant
+    ctx.font = '24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(`Your ascendant is ${String.fromCodePoint(0x2191)} ${horoscope._ascendant.Sign.label}`, canvas.width / 2, 50);
+
+    const offsetTop = 120;
     const offsetRow = 50;
 
     let prevZodiac = null;
@@ -60,8 +65,8 @@ const getCanvasChart = async horoscope => {
         if (prevZodiac !== entry.zodiac) {
             if (prevZodiac !== null) {
                 ctx.beginPath();
-                ctx.moveTo(10, 15 + (offsetRow * idx));
-                ctx.lineTo(200, 15 + (offsetRow * idx));
+                ctx.moveTo(10, 85 + (offsetRow * idx));
+                ctx.lineTo(200, 85 + (offsetRow * idx));
                 ctx.stroke();
             }
 
@@ -71,9 +76,11 @@ const getCanvasChart = async horoscope => {
         }
 
         // Bodies
-        if (entry.body === 'Pluto') { // Fuck you, Pluto, you dwarfstar you
+        if (entry.body === 'Pluto') { // Fuck you, Pluto, you shit dwarfstar you
             ctx.drawImage(plutoIcon, 217, offsetTop + (offsetRow * idx) - 20, 24, 24);
-        } else {        
+        } else if (entry.body === 'Chiron') {
+            ctx.drawImage(chironIcon, 215, offsetTop + (offsetRow * idx) - 20, 24, 24);
+        } else {
             ctx.textAlign = 'center';
             ctx.fillText(entry.body_icon, 230, offsetTop + (offsetRow * idx));
         }
@@ -84,8 +91,8 @@ const getCanvasChart = async horoscope => {
         if (prevHouse !== entry.house) {
             if (prevHouse !== null) {
                 ctx.beginPath();
-                ctx.moveTo(380, 15 + (offsetRow * idx));
-                ctx.lineTo(canvas.width - 10, 15 + (offsetRow * idx));
+                ctx.moveTo(380, 85 + (offsetRow * idx));
+                ctx.lineTo(canvas.width - 10, 85 + (offsetRow * idx));
                 ctx.stroke();
             }
 
