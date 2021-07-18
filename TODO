@@ -1,0 +1,6 @@
+- [x] Chart in canvas
+  - [] Sun, Moon, Ascension
+- [] Registration
+  - [] sqlite DB
+  - [] Store DOB
+  - [] Get Place of Birth coordinates
