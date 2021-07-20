@@ -1,4 +1,4 @@
-import Horoscope from '~/modules/Horoscope';
+import Horoscope from '../../modules/Horoscope';
 
 module.exports = {
     name: 'horoscope',

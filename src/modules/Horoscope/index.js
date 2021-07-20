@@ -1,9 +1,9 @@
 import { Origin, Horoscope as CNHoroscope } from 'circular-natal-horoscope-js';
 import Discord from 'discord.js';
 
-import MainModule from '~/modules/MainModule';
+import MainModule from '../MainModule';
 
-import DB from '~/util/DB';
+import DB from '../../util/DB';
 
 import dbSchema from './dbSchema';
 import showHelp from './showHelp';
@@ -154,8 +154,8 @@ class Horoscope extends MainModule {
 
     async getZodiacFromDatabase(message) {
         const db = new DB(dbSchema);
-        db.init();
-
+        await db.init();
+        
         const res = await db.getByIndex(message.author.id);
 
         if (res) {

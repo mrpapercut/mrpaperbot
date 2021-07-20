@@ -24,8 +24,9 @@ class DB {
             throw Error('No environment variable for DB_NAME');
         }
 
+        const dbname = process.env.DB_NAME.endsWith('.db') ? process.env.DB_NAME : process.env.DB_NAME + '.db';
         this.db = await sqliteOpen({
-            filename: path.resolve(__dirname, '../../db/', process.env.DB_NAME),
+            filename: path.resolve(__dirname, '../db/', dbname),
             driver: sqlite3.Database
         });
 
@@ -40,7 +41,7 @@ class DB {
         if (this.ready()) {
             const migrated = await this.db.migrate({
                 force: forceClear,
-                migrationsPath: path.resolve(__dirname, '../../db/migrations/')
+                migrationsPath: path.resolve(__dirname, '../db/migrations/')
             });
 
             return migrated;
@@ -129,18 +130,18 @@ class DB {
 
     async getByIndex(value) {
         if (!this.ready()) await this.#openDatabase();
-
+        
         const index = this.dbSchema.index;
         const rawQuery = `SELECT * FROM ${this.dbSchema.name} WHERE ${index} = @${index}`;
-
+        
         const query = await this.db.prepare(rawQuery);
-
+        
         const bindValues = {
             [`@${index}`]: value
         };
-
+        
         await query.bind(bindValues);
-
+        
         const res = await query.get();
 
         return res;

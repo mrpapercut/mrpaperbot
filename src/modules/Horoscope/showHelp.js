@@ -1,8 +1,15 @@
 const showHelp = (message, args) => {
     let response = '';
+    let helpKey = null;
+    
+    if (typeof args === 'string') {
+        helpKey = args;
+    } else if (args[1]) {
+        helpKey = args[1];
+    }
 
-    if (args[1]) {
-        switch (args[1]) {
+    if (helpKey) {
+        switch (helpKey) {
             case 'user_no_zodiac_known':
                 response = 'I don\'t know who you are. Please register using `.horoscope register` or provide a zodiac-sign like `.horoscope pisces`';
                 break;
@@ -12,7 +19,7 @@ const showHelp = (message, args) => {
                 break;
 
             default:
-                response = `Unknown command: \`${args[1]}\`.\n\nGlobal help`;
+                response = `Unknown command: \`${helpKey}\`.\n\nGlobal help`;
                 break;
         }
     } else {

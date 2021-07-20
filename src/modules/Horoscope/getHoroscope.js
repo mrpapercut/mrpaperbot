@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import {ucfirst} from '~/util/format';
-import appConfig from '~/config.json';
+import {ucfirst} from '../../util/format';
+import appConfig from '../../config.json';
 
 const parseLuckyTime = lt => {
     if (/am$/.test(lt)) {

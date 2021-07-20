@@ -3,7 +3,7 @@ import fs from 'fs';
 import Discord from 'discord.js';
 import dotenv from 'dotenv';
 
-import appConfig from '~/config.json';
+import appConfig from './config.json';
 
 dotenv.config({
     path: path.resolve(__dirname, '../.env')
