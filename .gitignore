@@ -1,7 +1,7 @@
 # Files
 package-lock.json
 .env
-db/*.db
+src/db/*.db
 
 # Folders
 node_modules
