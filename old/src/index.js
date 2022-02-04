@@ -41,8 +41,12 @@ client.on('message', message => {
 
     if (!command) return;
 
+    if (command.disabled && message.author.id !== process.env.BOT_OWNER_ID) {
+        return message.reply('This command is disabled');
+    }
+
     if (command.ownerOnly && message.author.id !== process.env.BOT_OWNER_ID) {
-        return;
+        return message.reply('This command is only available to Owners');
     }
 
     if (command.guildOnly && message.channel.type === 'dm') {

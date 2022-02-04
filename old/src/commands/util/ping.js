@@ -5,6 +5,6 @@ module.exports = {
     dmOnly: true,
     ownerOnly: true,
     execute(message, args) {
-        message.channel.send('Ping');
+        message.channel.send('Pong');
     }
 }

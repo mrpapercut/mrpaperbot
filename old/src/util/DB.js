@@ -82,7 +82,7 @@ class DB {
         const query = await this.db.prepare(rawQuery);
         const bindValues = {};
         otherFields.forEach(f => {
-            bindValues[`@${f}`] = values[f];
+            bindValues[`@${f}`] = values[f] ?? null;
         });
 
         await query.bind(bindValues);
@@ -151,9 +151,23 @@ class DB {
     async registerUser(values) {
         if (!this.ready()) await this.#openDatabase();
 
-        const res = await this.#insertRow(values);
+        // Check if user already exists. If it does, update rather than insert
+        const existingUser = await this.getByIndex(values.userid);
 
-        return res;
+        if (existingUser) {
+            const updatedRes = await this.#updateRow(values);
+            console.log(updatedRes);
+
+            return {
+                existingUser: true
+            }
+        } else {
+            await this.#insertRow(values);
+    
+            return {
+                existingUser: false
+            }
+        }
     }
 }
 

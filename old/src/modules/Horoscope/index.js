@@ -9,8 +9,9 @@ import dbSchema from './dbSchema';
 import showHelp from './showHelp';
 import getHoroscope from './getHoroscope';
 import getCanvasChart from './getCanvasChart';
+import registerUser from './registerUser';
 
-import zodiacs from './util/zodiacs';
+import findZodiacByName from './util/findZodiacByName';
 
 class Horoscope extends MainModule {
     constructor(props) {
@@ -27,14 +28,14 @@ class Horoscope extends MainModule {
          */
         if (args.length > 0) {
             // .horoscope <zodiac>
-            const zodiacName = this.findZodiacByName(args[0].toLowerCase());
+            const zodiacName = findZodiacByName(args[0].toLowerCase());
 
             if (zodiacName) {
                 getHoroscope(message, zodiacName);
             } else {
                 switch (args[0]) {
                     case 'register':
-                        this.registerUser(message, args);
+                        registerUser(message, args);
                         break;
                     case 'help':
                         showHelp(message, args);
@@ -55,20 +56,6 @@ class Horoscope extends MainModule {
         }
     }
 
-    findZodiacByName(term) {
-        if (Object.keys(zodiacs).includes(term)) {
-            return term;
-        } else {
-            for (let i in zodiacs) {
-                if (Object.values(zodiacs[i].i18n).includes(term)) {
-                    return i;
-                }
-            }
-
-            return false;
-        }
-    }
-
     async getChart(message) {
         const originTestMischa = {
             year: 1985,
@@ -79,18 +66,6 @@ class Horoscope extends MainModule {
             latitude: 52.62,
             longitude: 4.74,
         };
-
-        /*
-        const originTestChar = {
-            year: 1996,
-            month: 0,
-            date: 17,
-            hour: 18,
-            minute: 25,
-            latitude: 51.92,
-            longitude: 4.25
-        }
-        */
 
         const originAtBirth = new Origin(originTestMischa);
 
@@ -105,51 +80,6 @@ class Horoscope extends MainModule {
         const attachment = new Discord.MessageAttachment(canvasChart.toBuffer(), 'chart.png');
 
         message.channel.send(attachment);
-    }
-
-    registerUser(message, args) {
-        message.channel.send('registration coming soon');
-
-        // args[0] = 'register'
-        switch (args[1]) {
-            case 'sign':
-                // register userid + zodiac
-                break;
-
-            case 'date':
-                // calculate zodiac, register user_id + zodiac + dob
-                break;
-
-            case 'time':
-                // calculate zodiac, register user_id + zodiac + dob_*
-                break;
-
-            case 'location':
-                // calculate zodiac, register pob_lat + pob_long
-                break;
-
-            default:
-                return showHelp(message, 'unknown_option_register');
-        }
-
-        /*
-        const db = new DB(dbSchema);
-        db.init();
-
-        const res = db.registerUser({
-            userid: message.author.id,
-            zodiac: 'sagittarius',
-            dob_year: 1985,
-            dob_month: 11,
-            dob_day: 17,
-            dob_hour: 15,
-            dob_minute: 40,
-            pob_lat: 52.62,
-            pob_long: 4.74
-        })
-
-        message.channel.send('ok');
-        */
     }
 
     async getZodiacFromDatabase(message) {
