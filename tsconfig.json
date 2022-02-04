@@ -1,17 +1,16 @@
 {
-    "extends": "ts-node/node12/tsconfig.json",
-    "ts-node": {
-        "files": true
-    },
     "compilerOptions": {
-        "outDir": "./built",
+        "baseUrl": "./",
+        "outDir": "./dist",
+        "sourceMap": true,
+        // "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es2021",
         "allowJs": true,
-        "sourceMap": true
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "types": [
+            "node"
+        ]
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
 }
