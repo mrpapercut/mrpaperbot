@@ -1,7 +1,9 @@
-# Files
-package-lock.json
-.env
-src/db/*.db
-
 # Folders
 node_modules
+
+# Files
+dist/*
+package-lock.json
+
+# Gitkeep
+!.gitkeep
