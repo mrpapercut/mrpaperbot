@@ -1,20 +1,15 @@
-const path = require('path');
-
 module.exports = {
-    extends: "eslint:recommended",
-    env: {
-        node: true,
-        es6: true
-    },
+    parser: '@typescript-eslint/parser',
     parserOptions: {
-        ecmaVersion: 2019,
-        sourceType: 'module',
-        babelOptions: {
-            configFile: path.join(__dirname, '.babelrc')
-        }
+        ecmaVersion: 2022,
+        sourceType: 'module'
     },
-    parser: '@babel/eslint-parser',
+    plugins: ['@typescript-eslint'],
+    extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended'
+    ],
     rules: {
-        "no-prototype-builtins": "off"
+        'no-constant-condition': 'off'
     }
-};
+}
