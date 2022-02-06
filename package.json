@@ -12,11 +12,13 @@
   "scripts": {
     "build": "tsc ./src/server.ts --outDir ./dist/src",
     "run": "node ./dist/src/server.js",
-    "watch": "tsc-watch ./src/index.ts --outDir ./dist --onSuccess \"node ./dist/index.js\"",
+    "watch": "tsc-watch --outDir ./dist --onSuccess \"node ./dist/index.js\"",
     "eslint": "eslint ./src/**"
   },
   "dependencies": {
     "discord.js": "^13.6.0",
-    "express": "^4.17.2"
+    "express": "^4.17.2",
+    "jsdom": "^19.0.0",
+    "node-fetch": "^2.6.7"
   }
 }
