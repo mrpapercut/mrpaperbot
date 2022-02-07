@@ -9,9 +9,10 @@ type GameInfo = {
     url: string,
     image: string,
     times: {
-        main: string,
-        mainp: string,
-        completionist: string,
+        main?: string,
+        mainp?: string,
+        completionist?: string,
+        solo?: string,
     }
 };
 
@@ -50,8 +51,8 @@ class HLTBModule extends BotModule {
             'Game Boy': ['nintendogameboy', 'nintendogb', 'gameboy', 'gb'],
             'Game Boy Advance': ['nintendogameboyadvance', 'nintendogba', 'gameboyadvance', 'gba'],
             'Game Boy Color': ['nintendogameboycolor', 'nintendogbc', 'gameboycolor', 'gbc'],
-            'Nintendo DS': ['nintendods', 'ds'],
-            'Nintendo 3DS': ['nintendo3ds', '3ds'],
+            'Nintendo DS': ['nintendods', 'nds', 'ds'],
+            'Nintendo 3DS': ['nintendo3ds', 'n3ds', '3ds'],
             'Playstation': ['sonyplaystation', 'playstation', 'playstation1', 'ps1', 'psx'],
             'Playstation 2': ['sonyplaystation2', 'playstation2', 'ps2'],
             'Playstation 3': ['sonyplaystation3', 'playstation3', 'ps3'],
@@ -130,9 +131,9 @@ class HLTBModule extends BotModule {
             url: '',
             image: '',
             times: {
-                main: '',
-                mainp: '',
-                completionist: ''
+                main: '-',
+                mainp: '-',
+                completionist: '-'
             }
         }
 
@@ -150,7 +151,7 @@ class HLTBModule extends BotModule {
 
             response.times = mappedTimes;
         } catch (e) {
-            console.error(e);
+            console.warn(e);
             console.log(firstHit.outerHTML);
         }
 
